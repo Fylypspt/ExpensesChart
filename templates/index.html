@@ -3,7 +3,7 @@
 <section class="form-section">
   <h2>Add Expense</h2>
   <div class="form-row">
-    <input id="category" placeholder="Category (e.g., Food, Transport)" />
+    <input id="category" placeholder="Category" />
     <input id="amount" placeholder="Amount" type="number" step="0.01" />
     <input id="date" type="date" />
     <button id="addBtn">Add</button>
@@ -11,14 +11,21 @@
   <div id="error" class="error"></div>
 </section>
 
+<section class="filter-section">
+  <h2>Filter by Month</h2>
+  <input id="monthFilter" type="month" />
+  <button id="filterBtn">Filter</button>
+  <button id="clearFilterBtn">Clear</button>
+</section>
+
 <section class="chart-section">
   <h2>Spending by Category</h2>
   <canvas id="expenseChart" width="400" height="300"></canvas>
+  <div id="totalDisplay"></div>
 </section>
 
 <section class="list-section">
   <h2>Recent Expenses</h2>
   <ul id="expenseList" class="expense-list"></ul>
 </section>
-
 {% endblock %}

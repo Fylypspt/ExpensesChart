@@ -10,7 +10,6 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 
-# simple model inline for convenience
 class Expense(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     category = db.Column(db.String(80), nullable=False)
@@ -20,7 +19,6 @@ class Expense(db.Model):
     def to_dict(self):
         return {"id": self.id, "category": self.category, "amount": self.amount, "date": self.date.strftime("%Y-%m-%d")}
 
-# create DB if doesn't exist
 with app.app_context():
     db.create_all()
 
@@ -30,7 +28,16 @@ def index():
 
 @app.route("/api/expenses", methods=["GET"])
 def get_expenses():
-    expenses = Expense.query.order_by(Expense.date.desc()).all()
+    month = request.args.get("month")
+    query = Expense.query
+    if month:
+        try:
+            dt = datetime.strptime(month, "%Y-%m")
+            query = query.filter(db.extract("year", Expense.date) == dt.year,
+                                 db.extract("month", Expense.date) == dt.month)
+        except ValueError:
+            pass
+    expenses = query.order_by(Expense.date.desc()).all()
     return jsonify([e.to_dict() for e in expenses])
 
 @app.route("/api/expenses", methods=["POST"])
@@ -41,7 +48,6 @@ def add_expense():
         amount = float(data.get("amount", 0))
     except (ValueError, TypeError):
         return jsonify({"error": "Invalid amount"}), 400
-
     date_str = data.get("date")
     if date_str:
         try:
@@ -50,11 +56,29 @@ def add_expense():
             date = datetime.utcnow().date()
     else:
         date = datetime.utcnow().date()
-
     expense = Expense(category=category, amount=amount, date=date)
     db.session.add(expense)
     db.session.commit()
     return jsonify(expense.to_dict()), 201
+
+@app.route("/api/expenses/<int:expense_id>", methods=["PUT"])
+def update_expense(expense_id):
+    exp = Expense.query.get_or_404(expense_id)
+    data = request.get_json()
+    if "category" in data:
+        exp.category = data["category"].strip() or exp.category
+    if "amount" in data:
+        try:
+            exp.amount = float(data["amount"])
+        except (ValueError, TypeError):
+            return jsonify({"error": "Invalid amount"}), 400
+    if "date" in data and data["date"]:
+        try:
+            exp.date = datetime.strptime(data["date"], "%Y-%m-%d").date()
+        except ValueError:
+            pass
+    db.session.commit()
+    return jsonify(exp.to_dict()), 200
 
 @app.route("/api/expenses/<int:expense_id>", methods=["DELETE"])
 def delete_expense(expense_id):
