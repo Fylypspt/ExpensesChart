@@ -37,6 +37,7 @@ function renderList(data) {
     `
     list.appendChild(li)
   })
+
   document.querySelectorAll(".del-btn").forEach(btn => {
     btn.addEventListener("click", async e => {
       const id = e.currentTarget.dataset.id
@@ -44,22 +45,46 @@ function renderList(data) {
       fetchExpenses(document.getElementById("monthFilter").value)
     })
   })
+
   document.querySelectorAll(".edit-btn").forEach(btn => {
-    btn.addEventListener("click", async e => {
+    btn.addEventListener("click", e => {
       const id = e.currentTarget.dataset.id
-      const newCategory = prompt("New category:")
-      const newAmount = prompt("New amount:")
-      const newDate = prompt("New date (YYYY-MM-DD):")
-      if (!newCategory && !newAmount && !newDate) return
-      await fetch(`/api/expenses/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ category: newCategory, amount: newAmount, date: newDate })
+      const li = e.currentTarget.closest("li")
+      const cat = li.querySelector("strong").textContent
+      const amt = li.querySelector(".amount").textContent
+      const date = li.querySelector(".date").textContent
+
+      li.innerHTML = `
+        <div class="item-left">
+          <input class="edit-cat" value="${cat}" />
+          <input class="edit-date" type="date" value="${date}" />
+        </div>
+        <div class="item-right">
+          <input class="edit-amt" type="number" step="0.01" value="${amt}" />
+          <button class="save-btn">Save</button>
+          <button class="cancel-btn">Cancel</button>
+        </div>
+      `
+
+      li.querySelector(".save-btn").addEventListener("click", async () => {
+        const newCat = li.querySelector(".edit-cat").value.trim()
+        const newAmt = li.querySelector(".edit-amt").value
+        const newDate = li.querySelector(".edit-date").value
+        await fetch(`/api/expenses/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ category: newCat, amount: newAmt, date: newDate })
+        })
+        fetchExpenses(document.getElementById("monthFilter").value)
       })
-      fetchExpenses(document.getElementById("monthFilter").value)
+
+      li.querySelector(".cancel-btn").addEventListener("click", () => {
+        fetchExpenses(document.getElementById("monthFilter").value)
+      })
     })
   })
 }
+
 
 function renderChart(data) {
   const groups = {}
