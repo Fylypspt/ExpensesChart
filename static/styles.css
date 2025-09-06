@@ -1,0 +1,83 @@
+body {
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background: #f6f8fb;
+  margin: 0;
+  padding: 24px;
+  color: #1a202c;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+header h1 {
+  margin: 0 0 12px 0;
+}
+
+.form-section, .chart-section, .list-section {
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 6px 14px rgba(40, 44, 63, 0.06);
+  margin-bottom: 16px;
+}
+
+.form-row {
+  display: flex;
+  gap: 8px;
+}
+
+input {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #e6e9ef;
+  flex: 1;
+}
+
+button {
+  background: #2b8ad6;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.expense-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.expense-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f2f5;
+}
+
+.item-left .date {
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.item-right .amount {
+  margin-right: 12px;
+  font-weight: 600;
+}
+
+.del-btn {
+  background: transparent;
+  color: #b02a37;
+  border: 1px solid #f3d6d8;
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.error {
+  color: #b02a37;
+  margin-top: 8px;
+}/*# sourceMappingURL=styles.css.map */
